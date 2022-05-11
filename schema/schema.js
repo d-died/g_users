@@ -101,8 +101,9 @@ const mutation = new GraphQLObjectType({
             }
         },
         deleteUser: {
+            //type: what we expect to come out of this mutation
             type: UserType,
-            // args: what do we need in order to execute this mutation
+            // args: what we NEED in order to execute this mutation
             args: {
                 // use NonNull as means of "don't run this unless you know the id"
                 id: { type: new GraphQLNonNull(GraphQLString) }
@@ -110,6 +111,19 @@ const mutation = new GraphQLObjectType({
             resolve(parentValue, { id }) {
                 return axios.delete(`http://localhost:3000/users/${id}`)
                     .then(res => res.data);
+            }
+        },
+        editUser: {
+            type: UserType,
+            args: {
+                id: { type: new GraphQLNonNull(GraphQLString) },
+                firstName: { type: GraphQLString },
+                age: { type: GraphQLInt },
+                companyId: { type: GraphQLString }
+            },
+            resolve(parentValue, args) {
+                return axios.patch(`http://localhost:3000/users/${args.id}`, args)
+                    .then(res => res.data)
             }
         }
     }
