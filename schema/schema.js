@@ -7,12 +7,35 @@ const {
     GraphQLSchema
 } = graphql;
 
+// ALL SCHEMA TYPES REQUIRE NAME AND FIELDS PROPERTIES
+const CompanyType = new GraphQLObjectType({
+    name: 'Company',
+    fields: {
+        id: { type: GraphQLString },
+        name: { type: GraphQLString },
+        description: { type: GraphQLString }
+    }
+});
+
 const UserType = new GraphQLObjectType({
     name: 'User',
     fields: {
         id: { type: GraphQLString },
         firstName: { type: GraphQLString },
-        age: { type: GraphQLInt }
+        age: { type: GraphQLInt },
+        // we added the below to connect users with companies
+        // this is DIFFERENT than the companyId key that is in the db.json file Users array
+        // THUS a resolve function is required to populate this property
+        company: {
+            type: CompanyType,
+            resolve(parentValue, args) {
+                // console.log(parentValue, args);
+                return axios.get(`http://localhost:3000/companies/${parentValue.companyId}`)
+                    .then(res => res.data)
+          
+                    // .then(res => res.data)
+            }
+        }
     }
 });
 
